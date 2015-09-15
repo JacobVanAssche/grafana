@@ -106,7 +106,7 @@ function (angular, _, kbn) {
     OpenTSDBDatasource.prototype._performMetricKeyLookup = function(metric) {
       if(!metric) { return $q.when([]); }
 
-      return this._get('/api/search/lookup', {m: metric, limit: 1000}).then(function(result) {
+      return this._get('/api/search/lookup', {m: metric}).then(function(result) {
         result = result.data.results;
         var tagks = [];
         _.each(result, function(r) {
@@ -170,6 +170,16 @@ function (angular, _, kbn) {
     OpenTSDBDatasource.prototype.testDatasource = function() {
       return this._performSuggestQuery('cpu', 'metrics').then(function () {
         return { status: "success", message: "Data source is working", title: "Success" };
+      });
+    };
+
+    OpenTSDBDatasource.prototype.performAggregatorsQuery = function() {
+      return this._get('/api/aggregators', {}).then(function(result) {
+        if (result.data instanceof Array) {
+          return result.data.sort();
+        } else {
+          return result.data;
+        }
       });
     };
 
